@@ -7,6 +7,7 @@
     <authors>Marc Mihalack</authors>
     <owners>Marc Mihalack</owners>
     <projectUrl>https://github.com/marcmihalack/CmdLineLib</projectUrl>
+    <licenseUrl>https://github.com/marcmihalack/CmdLineLib/blob/master/LICENSE</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CmdLineLib allows to create mapping of method parameters to command line arguments, provides necessary conversion and generates help.  Highly configurable and flexible.</description>
     <summary>Strongly typed command line</summary>
