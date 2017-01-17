@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(RootDir)Version.props" />
+  <PropertyGroup>
+    <RootDir Condition=" '$(RootDir)' == '' ">$(MSBuildThisFileDirectory)</RootDir>
+    <_BuildDir Condition=" '$(BuildDir)' != '' and HasTrailingSlash('$(BuildDir)')">$(BuildDir)</_BuildDir>
+    <_BuildDir Condition=" '$(BuildDir)' != '' and !HasTrailingSlash('$(BuildDir)')">$(BuildDir)\</_BuildDir>
+    <_BuildDir Condition=" '$(BuildDir)' == '' ">$(RootDir)_build\$(Configuration).$(TargetFrameworkVersion)\</_BuildDir>
+    <!-- EnvName for local builds must be LOCAL.  Build Definition overrides this value -->
+    <EnvName Condition="'$(EnvName)'==''">LOCAL</EnvName>
+    <!-- BuildNumber can be any string if integers and '.' that ends in at least one digit -->
+    <BuildNumber Condition="'$(BuildNumber)'==''">0</BuildNumber>
+    <!-- AppVersion as Major.Minor.Path see http://semver.org/ for details -->
+    <AppVersion Condition="'$(AppVersion)'==''">0.0.0</AppVersion>
+    <!-- NuSpecVersion is AppVersion with optional prerelease tag -->
+    <AppVersionTag Condition="'$(AppVersionTag)'==''"></AppVersionTag>
+    <NuSpecVersion Condition="'$(NuSpecVersion)'==''">$(AppVersion)$(AppVersionTag)</NuSpecVersion>
+    <CompanyName Condition="$(CompanyName)==''">MyCompanyName</CompanyName>
+    <ProductName Condition="$(ProductName)==''">MyProductName</ProductName>
+    <!-- NuGetCommand is used only if building Package target and is not required for development - nugetizing is handled by Build Definition
+         If needed, you can download latest version from https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -->
+    <NuGetCommand Condition="'$(NuGetCommand)'==''">$(RootDir)..\nuget.exe</NuGetCommand>
+    <IntDir Condition=" '$(IntDir)' == '' ">$(_BuildDir)obj\$(MSBuildProjectName)\</IntDir>
+    <BaseIntermediateOutputPath Condition=" '$(BaseIntermediateOutputPath)' == '' ">$(_BuildDir)obj\</BaseIntermediateOutputPath>
+    <PublishDir Condition="'$(PublishDir)'==''">$(_BuildDir)publish\</PublishDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TestProjectType)' == '' ">
+    <OutDir Condition=" '$(OutDir)' == '' ">$(_BuildDir)bin\$(MSBuildProjectName)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TestProjectType)' != '' ">
+    <OutDir Condition=" '$(OutDir)' == '' ">$(_BuildDir)test\$(MSBuildProjectName)\</OutDir>
+  </PropertyGroup>
+  </Project>

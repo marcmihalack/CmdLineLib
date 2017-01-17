@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>CmdLineLib</id>
+    <version>$version$</version>
+    <title>Command Line tools</title>
+    <authors>Marc Mihalack</authors>
+    <owners>Marc Mihalack</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CmdLineLib allows to create mapping of method parameters to command line arguments, provides necessary conversion and generates help.  Highly configurable and flexible.</description>
+    <summary>Strongly typed command line</summary>
+    <releaseNotes>Beta</releaseNotes>
+    <copyright>2013-2017 © Marc Mihalack. All rights reserved.</copyright>
+    <language>en-US</language>
+    <tags>command line cmdline cli console</tags>
+  </metadata>
+  <files>
+    <file src="..\..\..\Release.v4.5.2\bin\CmdLineLib\CmdLineLib.dll" target="lib\net452\CmdLineLib.dll" />
+    <file src="..\..\..\Release.v4.5.2\bin\CmdLineLib\CmdLineLib.pdb" target="lib\net452\CmdLineLib.pdb" />
+    <file src="..\..\..\Release.v4.6.1\bin\CmdLineLib\CmdLineLib.dll" target="lib\net461\CmdLineLib.dll" />
+    <file src="..\..\..\Release.v4.6.1\bin\CmdLineLib\CmdLineLib.pdb" target="lib\net461\CmdLineLib.pdb" />
+  </files>
+</package>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="Common.tasks" />
+
+  <PropertyGroup>
+    <CompileDependsOn>
+      VerifyCommonProps;
+      CommonBuildDefineModifiedAssemblyVersion;
+      $(CompileDependsOn);
+    </CompileDependsOn>
+
+    <BuildDependsOn>
+      CommonBuildDefineNuSpecVersion;
+      $(BuildDependsOn);
+    </BuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="VerifyCommonProps">
+    <Error Condition=" '$(AppVersionTag)' != '' and !$(AppVersionTag.StartsWith('-')) " Text="AppVersionTag must start with '-'" />
+    <Error Condition=" '$(_BuildDir)' == '' " Text="_BuildDir is not defined" />
+    <Error Condition=" !HasTrailingSlash('$(_BuildDir)') " Text="_BuildDir must end with trailing slash" />
+  </Target>
+
+  <!--  Update Assembly Version on Compile  -->
+  <Target Name="CommonBuildDefineModifiedAssemblyVersion" Condition="'$(AppVersion)' != ''">
+    <ItemGroup>
+      <OriginalAssemblyInfo Include="@(Compile)" Condition="%(Filename) == 'AssemblyInfo' And (%(Extension) == '.vb' Or %(Extension) == '.cs')" />
+      <Compile Remove="**/Properties/AssemblyInfo.vb" />
+      <Compile Remove="**/Properties/AssemblyInfo.cs" />
+    </ItemGroup>
+    <Copy SourceFiles="@(OriginalAssemblyInfo)" DestinationFiles="@(OriginalAssemblyInfo->'$(IntermediateOutputPath)%(Identity)')">
+      <Output TaskParameter="DestinationFiles" ItemName="ModifiedAssemblyInfo"/>
+    </Copy>
+    <UpdateAssemblyVersion Files="@(ModifiedAssemblyInfo)"
+                AppVersion="$(AppVersion)"
+                BuildNumber="$(BuildNumber)"
+                CompanyName="$(CompanyName)"
+                ProductName="$(ProductName)"
+                />
+    <ItemGroup>
+      <Compile Include="@(ModifiedAssemblyInfo)" />
+    </ItemGroup>
+  </Target>
+
+  <!--  Transform config on Build  -->
+  <Target Name="CommonBuildTransformConfig">
+    <PropertyGroup>
+      <_SecretStoreFile>$(MSBuildThisFileDirectory)\.vs\stuff</_SecretStoreFile>
+      <_SourceConfigFile></_SourceConfigFile>
+      <_InterConfigFile></_InterConfigFile>
+      <_OutputConfigFile></_OutputConfigFile>
+    </PropertyGroup>
+    <Message Text="Transforming config" />
+    <TransformXml Condition=" Exists('App.$(EnvName).config') "
+          Source="App.config" Transform="App.$(EnvName).config" Destination="$(IntermediateOutputPath)\App.config" />
+    <Copy Condition=" !Exists('App.$(EnvName).config') "
+          SourceFiles="App.config" DestinationFiles="$(IntermediateOutputPath)\App.config" />
+    <TransformSecrets InputFiles="$(IntermediateOutputPath)\App.config" SecretStoreFile="$(MSBuildThisFileDirectory)\.vs\stuff" OutputFiles="$(OutputPath)\$(TargetFileName).config" />
+  </Target>
+
+  <!--  Update NuSpec Version on Build  -->
+  <Target Name="CommonBuildDefineNuSpecVersion" Condition="'$(NuSpecVersion)' != '' and '@(NuSpec)' != ''" DependsOnTargets="Compile">
+    <Message Text="Setting NuSpecVersion to $(NuSpecVersion)" />
+    <UpdateNuSpecVersion InputFiles="@(NuSpec)" OutputFiles="@(NuSpec->'$(OutputPath)%(Identity)')" NuSpecVersion="$(NuSpecVersion)" />
+  </Target>
+
+  <!--  Package NuGet - run MSBuild with target:Package  -->
+  <Target Name="PackageNuGet">
+    <Error Condition=" '$(NuGetCommand)' == '' " Text="Command NuGetCommand not defined" />
+    <Error Condition=" !Exists('$(NuGetCommand)')" Text="File $(NuGetCommand) not found.  Download latest from https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" />
+    <MakeDir Directories="$(PublishDir)" Condition="!Exists('$(PublishDir)')" />
+    <Message Text="NuSpec @(NuSpec) in $(OutputPath) publishing to $(PublishDir)" Importance="high"/>
+    <Exec Command="$(NuGetCommand) pack @(NuSpec->'$(OutputPath)%(Identity)') -OutputDirectory $(PublishDir) -Version $(NuSpecVersion)" LogStandardErrorAsError="true" />
+  </Target>
+</Project>

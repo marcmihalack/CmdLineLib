@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(MSBuildToolsVersion)\Web\Microsoft.Web.Publishing.Tasks.dll" />
+
+  <UsingTask TaskName="CompressFolder" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <SourceDir ParameterType="System.String" Required="true" />
+      <DestinationFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            try {
+                if(System.IO.File.Exists(this.DestinationFile))
+                  System.IO.File.Delete(this.DestinationFile);
+                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(this.DestinationFile));
+                Log.LogMessage(MessageImportance.Normal, "Compressiong directory " + this.SourceDir + " to " + this.DestinationFile);
+                System.IO.Compression.ZipFile.CreateFromDirectory(this.SourceDir, this.DestinationFile);
+                return true;
+            }
+            catch (Exception ex) {
+                Log.LogErrorFromException(ex);
+                return false;
+            }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <!--
+      From: http://www.lionhack.com/2014/02/13/msbuild-override-assembly-version/
+  -->
+  <UsingTask TaskName="UpdateAssemblyVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <Files ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <AppVersion ParameterType="System.String" Required="true" />
+      <BuildNumber ParameterType="System.String" Required="true" />
+      <CompanyName ParameterType="System.String" Required="false" />
+      <ProductName ParameterType="System.String" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Using Namespace="Microsoft.Build.Utilities" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            try {
+                var now = DateTime.Now;
+                
+                uint revisionNumber = 1;
+                if(!string.IsNullOrEmpty(BuildNumber))
+                    revisionNumber = uint.Parse(System.Text.RegularExpressions.Regex.Matches(BuildNumber, @"^([0-9\.\-a-z]+\.)?([0-9]+)$")[0].Groups[2].Value);
+                // algorithm valid till 2023/12/31 and for up to 16 revisions (in VSO up to 16 builds of the same build definition in one day)
+                int number = ((((((now.Year - 2016) << 4) | (now.Month - 1)) << 5) | (now.Day - 1)) << 4) | (int)((revisionNumber - 1) % 100);
+                
+                Log.LogMessage(MessageImportance.High, string.Format("Updating AssemblyInfo to {0}.{1} (rev={2}) company {3} product {4}", this.AppVersion, number, revisionNumber, this.CompanyName, this.ProductName));
+                var assemblyVersion = string.Format("{0}.{1}", this.AppVersion, number);
+                var va = string.Format(@"AssemblyVersion(""{0}"")", assemblyVersion);
+                var vf = string.Format(@"AssemblyFileVersion(""{0}"")", assemblyVersion);
+                var vc = string.Format(@"AssemblyCompany(""{0}"")", this.CompanyName);
+                var vp = string.Format(@"AssemblyProduct(""{0}"")", this.ProductName);
+                var sb = new StringBuilder();
+                var firstYear = 2013;
+                var currentYear = DateTime.Now.Year;
+                sb.AppendFormat("AssemblyCopyright(\"Copyright \u00A9 {0} ", this.CompanyName);
+                if(firstYear < currentYear) sb.AppendFormat(@"{0}-{1}"")", firstYear, currentYear);
+                else sb.AppendFormat(@"{0}"")", firstYear);
+                var vr = sb.ToString();
+                var rxa = new System.Text.RegularExpressions.Regex(@"AssemblyVersion\(""[0-9]+(\.([0-9]+|\*)){1,3}""\)");
+                var rxf = new System.Text.RegularExpressions.Regex(@"AssemblyFileVersion\(""[0-9]+(\.([0-9]+|\*)){1,3}""\)");
+                var rxc = new System.Text.RegularExpressions.Regex(@"AssemblyCompany\(""(.*)""\)");
+                var rxp = new System.Text.RegularExpressions.Regex(@"AssemblyProduct\(""(.*)""\)");
+                var rxr = new System.Text.RegularExpressions.Regex(@"AssemblyCopyright\(""(.*)""\)");
+                for (int i = 0; i < Files.Length; ++i)
+                {
+                    var path = Files[i].GetMetadata("FullPath");
+                    if (!File.Exists(path))
+                        continue;
+
+                    var txt = File.ReadAllText(path);
+                    txt = rxa.Replace(txt, va);
+                    txt = rxf.Replace(txt, vf);
+                    txt = rxc.Replace(txt, vc);
+                    txt = rxp.Replace(txt, vp);
+                    txt = rxr.Replace(txt, vr);
+                    
+                    File.WriteAllText(path, txt);
+                }
+                return true;
+            }
+            catch (Exception ex) {
+                Log.LogErrorFromException(ex);
+                return false;
+            }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="UpdateNuSpecVersion" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <InputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <OutputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <NuSpecVersion ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Using Namespace="Microsoft.Build.Utilities" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            try {
+                Log.LogMessage(MessageImportance.High, string.Format("Updating NuSpecVersion to {0}", this.NuSpecVersion));
+                var v = string.Format(@"<version>{0}</version>", this.NuSpecVersion);
+                var rx = new System.Text.RegularExpressions.Regex(@"<version>[^<]+</version>");
+                for (int i = 0; i < InputFiles.Length; ++i)
+                {
+                    var path = InputFiles[i].GetMetadata("FullPath");
+                    if (!File.Exists(path))
+                        continue;
+
+                    var txt = File.ReadAllText(path);
+                    txt = rx.Replace(txt, v);
+                    var outpath = OutputFiles[i].GetMetadata("FullPath");
+                    File.WriteAllText(outpath, txt);
+                }
+                return true;
+            }
+            catch (Exception ex) {
+                Log.LogErrorFromException(ex);
+                return false;
+            }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="TransformSecrets" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <InputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <OutputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <SecretStoreFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Text.RegularExpressions" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Using Namespace="Microsoft.Build.Utilities" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            try {
+                Log.LogMessage(MessageImportance.High, string.Format("Updating secrets from {0}", this.SecretStoreFile));
+                var splitChars = new char[] { '=' };
+                var dict = File.Exists(this.SecretStoreFile)
+                    ? File.ReadAllLines(this.SecretStoreFile)
+                        .Select(l => l.Split(splitChars, 2)).ToDictionary(s => s[0], s => s[1])
+                    : new Dictionary<string, string>();
+
+                var rx = new System.Text.RegularExpressions.Regex(@"%([a-zA-z\.]+)%");
+                for (int fileNo = 0; fileNo < InputFiles.Length; ++fileNo)
+                {
+                    var path = this.InputFiles[fileNo].GetMetadata("FullPath");
+                    if (!File.Exists(path))
+                        continue;
+
+                    Log.LogMessage(MessageImportance.High, string.Format("Transforming secrets in {0}", path));
+                    var txt = File.ReadAllText(path);
+                    var outpath = this.OutputFiles[fileNo].GetMetadata("FullPath");
+                    using (var output = new FileStream(outpath, FileMode.Create))
+                    using (var writer = new StreamWriter(output))
+                    {
+                        var matches = rx.Matches(txt);
+                        int prevIndex = 0;
+                        for (int i = 0; i < matches.Count; i++)
+                        {
+                            string value = null;
+                            var match = matches[i];
+                            var name = match.Groups[1].Value;
+
+                            dict.TryGetValue(name, out value);
+
+                            int index = match.Captures[0].Index;
+                            if (prevIndex != index)
+                                writer.Write(txt.Substring(prevIndex, index - prevIndex));
+                            if (value != null)
+                                writer.Write(value);
+                            prevIndex = match.Captures[0].Index + match.Captures[0].Length;
+                        }
+                        if (prevIndex > txt.Length)
+                            throw new Exception("Invalid index when parsing value");
+                        if (prevIndex != txt.Length)
+                            writer.Write(txt.Substring(prevIndex));
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex) {
+                Log.LogErrorFromException(ex);
+                return false;
+            }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+</Project>
