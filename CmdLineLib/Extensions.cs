@@ -36,7 +36,9 @@ namespace CmdLineLib
         public static IColorConsole WriteAppHeader(this IColorConsole con, ClassDefinition cd)
         {
             con.w("{0}", cd.AppTitle).w(ConsoleColor.Green, $" {cd.Version}").wl($" {cd.Copyright}");
-            if (!string.IsNullOrEmpty(cd.Description))
+            if (cd.HelpText != null)
+                con.wl("{0}", cd.HelpText);
+            else if (!string.IsNullOrEmpty(cd.Description))
                 con.wl("{0}", cd.Description);
             return con;
         }

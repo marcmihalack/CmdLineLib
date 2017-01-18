@@ -16,6 +16,7 @@ namespace CmdLineLib
         public string Copyright { get; }
         public string Description { get; }
         public CmdLineClassAttribute Attribute { get; }
+        public string HelpText { get { return Attribute?.HelpText; } }
         public string ExeName { get; }
         public InclusionBehavior InclusionBehavior { get; }
         public CmdLineConfig Config { get; }
