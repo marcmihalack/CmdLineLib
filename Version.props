@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- AppVersion as Major.Minor.Path see http://semver.org/ for details -->
-    <AppVersion>0.2.1</AppVersion>
+    <AppVersion>1.0.0</AppVersion>
     <!-- NuSpecVersion is AppVersion with optional prerelease tag -->
-    <AppVersionTag>-beta</AppVersionTag>
+    <AppVersionTag></AppVersionTag>
     <CompanyName>Mihalack</CompanyName>
     <ProductName>CmdLineLib</ProductName>
   </PropertyGroup>
