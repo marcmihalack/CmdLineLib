@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CmdLineLib.Tests.Classes
 {
-    [CmdLineClass(HelpText:"Test class 1")]
+    [CmdLineClass(helpText:"Test class 1")]
     public class TestClassStatic
     {
         public static string MethodInvoked { get; private set; }

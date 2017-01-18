@@ -6,7 +6,7 @@ namespace CmdLineLib.Tests
     [TestClass]
     public class MethodInclusion_IncludeAllStaticTests : MethodInclusionBase
     {
-        [CmdLineClass(InclusionBehavior: InclusionBehavior.IncludeAllStatic)]
+        [CmdLineClass(inclusionBehavior: InclusionBehavior.IncludeAllStatic)]
         class ClassWithStaticMethods
         {
             public static void MyStaticMethod()
@@ -15,7 +15,7 @@ namespace CmdLineLib.Tests
             }
         };
 
-        [CmdLineClass(InclusionBehavior: InclusionBehavior.IncludeAllStatic)]
+        [CmdLineClass(inclusionBehavior: InclusionBehavior.IncludeAllStatic)]
         class ClassWithAllMethods
         {
             public void MyMethod()
@@ -29,7 +29,7 @@ namespace CmdLineLib.Tests
             }
         };
 
-        [CmdLineClass(InclusionBehavior: InclusionBehavior.IncludeAllStatic)]
+        [CmdLineClass(inclusionBehavior: InclusionBehavior.IncludeAllStatic)]
         class ClassWithNonStaticMethods
         {
             public void MyMethod()

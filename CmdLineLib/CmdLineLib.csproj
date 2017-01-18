@@ -58,7 +58,6 @@
     <Compile Include="Attributes\CmdLineBaseAttribute.cs" />
     <Compile Include="Attributes\CmdLineClassAttribute.cs" />
     <Compile Include="Attributes\CmdLineExcludeAttribute.cs" />
-    <Compile Include="Attributes\CmdLineHelpMethodAttribute.cs" />
     <Compile Include="Attributes\CmdLineMethodAttribute.cs" />
     <Compile Include="Definitions.cs" />
     <Compile Include="InclusionBehavior.cs" />
