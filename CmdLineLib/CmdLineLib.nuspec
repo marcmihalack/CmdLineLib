@@ -14,7 +14,7 @@
     <releaseNotes>Beta</releaseNotes>
     <copyright>2013-2017 © Marc Mihalack. All rights reserved.</copyright>
     <language>en-US</language>
-    <tags>command line cmdline cli console</tags>
+    <tags>command line cmdline cli console parameters</tags>
   </metadata>
   <files>
     <file src="..\..\..\Release.v4.5.2\bin\CmdLineLib\CmdLineLib.dll" target="lib\net452\CmdLineLib.dll" />
