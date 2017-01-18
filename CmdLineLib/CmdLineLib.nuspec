@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CmdLineLib allows to create mapping of method parameters to command line arguments, provides necessary conversion and generates help.  Highly configurable and flexible.</description>
     <summary>Strongly typed command line</summary>
-    <releaseNotes>Beta</releaseNotes>
+    <releaseNotes>Version 1.0</releaseNotes>
     <copyright>2013-2017 © Marc Mihalack. All rights reserved.</copyright>
     <language>en-US</language>
     <tags>command line cmdline cli console parameters</tags>
