@@ -9,10 +9,14 @@ namespace CmdLineLib.Tests
 
         protected void Test_Call<T>(string arg, bool expectedNonStatic, bool expectedStatic) where T : class
         {
-            var args = new[] { arg };
+            Test_Call<T>(new string[] { arg }, expectedNonStatic, expectedStatic);
+        }
+
+        protected void Test_Call<T>(string[] args, bool expectedNonStatic, bool expectedStatic) where T : class
+        {
             CmdLine<T>.Execute(args);
-            Assert.AreEqual(expectedNonStatic, WasNonStaticMethodCalled);
-            Assert.AreEqual(expectedStatic, WasStaticMethodCalled);
+            Assert.AreEqual(expectedNonStatic, WasNonStaticMethodCalled, expectedNonStatic ? "Expected non-static method to be called but NO call was made" : "Expected non-static method NOT to be called but the call was made");
+            Assert.AreEqual(expectedStatic, WasStaticMethodCalled, expectedStatic ? "Expected static method to be called but NO call was made" : "Expected static method NOT to be called but the call was made");
         }
 
         protected void Test_NonStaticMethod_NonStaticCall<T>() where T : class

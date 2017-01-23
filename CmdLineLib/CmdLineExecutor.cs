@@ -64,13 +64,13 @@ namespace CmdLineLib
 
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-        object ProcessParameter(CmdLineParameter parameter, IDictionary<string, string> inputArgs)
+        Tuple<CmdLineParameter, bool, string> ProcessParameter(CmdLineParameter parameter, IDictionary<string, string> args)
         {
-            var name = parameter.Name.ToLower();
-            bool isArgProvided = inputArgs.TryGetValue(name, out string argValue);
-            if (isArgProvided)
-                inputArgs.Remove(name);
-            return parameter.GetParameterValue(isArgProvided, argValue);
+            var name = parameter.Name;
+            var pair = args.Where(p1 => p1.Key.Equals(name, Defintion.Config.NameComparison)).FirstOrDefault();
+            if (pair.Key != null)
+                args.Remove(pair.Key);
+            return Tuple.Create(parameter, pair.Key != null, pair.Value);
         }
 
         object Invoke(MethodDefinition method, IReadOnlyDictionary<string, string> inputArgs)
@@ -80,32 +80,15 @@ namespace CmdLineLib
             //List<CmdLineParameter> ps = new List<CmdLineParameter>();
             Dictionary<string, Tuple<string, bool>> argValues = new Dictionary<string, Tuple<string, bool>>();
 
-            var ps = method.Parameters.Select(p =>
-            {
-                var name = p.Name.ToLower();
-                bool isArgProvided = args.TryGetValue(name, out string argValue);
-                if (isArgProvided)
-                    args.Remove(name);
-                return Tuple.Create(p, isArgProvided, argValue);
-            }).ToArray();
-            /*
-            foreach (var parameter in method.Parameters)
-            {
-                var name = parameter.Name.ToLower();
-                bool isArgProvided = args.TryGetValue(name, out string argValue);
-                if (isArgProvided)
-                    args.Remove(name);
-                argValues.Add(name, Tuple.Create(argValue, isArgProvided));
-                //var value = ProcessParameter(parameter, args);
-                //values.Add(value);
-            }*/
+            var ps = method.Parameters.Select(p => ProcessParameter(p, args)).ToArray();
 
             if (args.Count > 0)
             {
                 foreach (var item in Defintion.CommonParameters)
                 {
-                    var value = ProcessParameter(item, args);
-                    item.SetValue(InstanceProvider.GetSafeInstance(), value);
+                    var t3 = ProcessParameter(item, args);
+                    if(t3.Item2)
+                        item.SetValue(InstanceProvider.GetSafeInstance(), item.GetParameterValue(t3.Item2, t3.Item3));
                 }
 
                 if (args.Count > 0)

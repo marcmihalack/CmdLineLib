@@ -4,17 +4,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CmdLineLib.Tests.Classes
 {
     [CmdLineClass(helpText:"Test class 1")]
-    public class TestClassStatic
+    public sealed class TestClassStatic
     {
-        public static string MethodInvoked { get; private set; }
-        public static void Reset()
-        {
-            MethodInvoked = null;
-        }
+        public static string GetMethodInvokedAndReset() { var method = methodInvoked; methodInvoked = null; return method; }
+        public static void Reset() { methodInvoked = null; }
+        static string methodInvoked = null;
 
         [CmdLineMethod("test1")]
         public static void TestMethod1([CmdLineArg("arg")]string arg1)
         {
+            methodInvoked = "test1";
             Assert.AreEqual(typeof(string), arg1.GetType());
         }
 
@@ -23,6 +22,7 @@ namespace CmdLineLib.Tests.Classes
             [CmdLineArg("count")]int count,
             [CmdLineArg("list")]string[] list)
         {
+            methodInvoked = "test2";
             Assert.AreEqual(typeof(int), count.GetType());
             Assert.IsTrue(count >= 0);
             Assert.AreEqual(typeof(string[]), list.GetType());
@@ -35,6 +35,7 @@ namespace CmdLineLib.Tests.Classes
             [CmdLineArg("count")]int count,
             [CmdLineArg("list")]int[] list)
         {
+            methodInvoked = "test3";
             Assert.AreEqual(typeof(int), count.GetType());
             Assert.IsTrue(count >= 0);
             Assert.AreEqual(typeof(int[]), list.GetType());
@@ -45,17 +46,11 @@ namespace CmdLineLib.Tests.Classes
         [CmdLineMethod("staticmethod")]
         public static void StaticMethod()
         {
-            MethodInvoked = "staticmethod";
-        }
-
-        [CmdLineMethod("nonstaticmethod")]
-        public void DynamicMethod()
-        {
-            Assert.Fail("Shouldn't be called");
+            methodInvoked = "staticmethod";
         }
 
         [CmdLineMethod("nonpublicmethod")]
-        protected static void NonpublicMethod()
+        private static void NonpublicMethod()
         {
             Assert.Fail("Shouldn't be called");
         }

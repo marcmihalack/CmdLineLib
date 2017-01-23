@@ -19,6 +19,7 @@ namespace CmdLineLib
         IncludeNonStaticProperties = 8,
         IncludeStaticFields = 16,
         IncludeNonStaticFields = 32,
+        IncludeInherited = 64,
 
         IncludeAllMethods = IncludeNonStaticMethods | IncludeStaticMethods,
         IncludeAllProperties = IncludeNonStaticProperties | IncludeStaticProperties,

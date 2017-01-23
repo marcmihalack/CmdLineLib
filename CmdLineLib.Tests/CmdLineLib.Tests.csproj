@@ -68,6 +68,7 @@
     <Compile Include="Classes\TestClassStatic.cs" />
     <Compile Include="CmdLineTests.cs" />
     <Compile Include="MethodInclusionBase.cs" />
+    <Compile Include="MethodInclusion_IncludeInheritedTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MethodInclusion_DefaultIncludeAllTests.cs" />
     <Compile Include="MethodInclusion_IncludeAllStaticTests.cs" />

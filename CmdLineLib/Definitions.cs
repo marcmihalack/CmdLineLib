@@ -41,40 +41,43 @@ namespace CmdLineLib
                 ? Attribute.InclusionBehavior
                 : InclusionBehavior.Default;
 
-            var ass = Assembly.GetEntryAssembly();
-            ExeName = System.IO.Path.GetFileName(ass.Location);
-            Version = ass.GetName().Version;
-            var attrs = ass.GetCustomAttributes(true);
-            AssemblyDescriptionAttribute vd = null;
-            AssemblyTitleAttribute vt = null;
-            AssemblyCopyrightAttribute vc = null;
-            foreach (var attr in attrs)
+            var ąssembly = Assembly.GetEntryAssembly();
+            if (ąssembly != null)
             {
-                if (vd == null)
+                ExeName = System.IO.Path.GetFileName(ąssembly.Location);
+                Version = ąssembly.GetName().Version;
+                var attrs = ąssembly.GetCustomAttributes(true);
+                AssemblyDescriptionAttribute vd = null;
+                AssemblyTitleAttribute vt = null;
+                AssemblyCopyrightAttribute vc = null;
+                foreach (var attr in attrs)
                 {
-                    vd = attr as AssemblyDescriptionAttribute;
-                    if (vd != null)
+                    if (vd == null)
                     {
-                        Description = vd.Description;
-                        continue;
+                        vd = attr as AssemblyDescriptionAttribute;
+                        if (vd != null)
+                        {
+                            Description = vd.Description;
+                            continue;
+                        }
                     }
-                }
-                if (vt == null)
-                {
-                    vt = attr as AssemblyTitleAttribute;
-                    if (vt != null)
+                    if (vt == null)
                     {
-                        AppTitle = vt.Title;
-                        continue;
+                        vt = attr as AssemblyTitleAttribute;
+                        if (vt != null)
+                        {
+                            AppTitle = vt.Title;
+                            continue;
+                        }
                     }
-                }
-                if (vc == null)
-                {
-                    vc = attr as AssemblyCopyrightAttribute;
-                    if (vc != null)
+                    if (vc == null)
                     {
-                        Copyright = vc.Copyright;
-                        continue;
+                        vc = attr as AssemblyCopyrightAttribute;
+                        if (vc != null)
+                        {
+                            Copyright = vc.Copyright;
+                            continue;
+                        }
                     }
                 }
             }
@@ -100,7 +103,9 @@ namespace CmdLineLib
 
         IEnumerable<MethodDefinition> GetIncludedMethods()
         {
-            var methods = Type.GetMethods(BindingFlags.Static | BindingFlags.Public).Where(m => !m.IsSpecialName);
+            var methods = Type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance).Where(m => !m.IsSpecialName);
+            if((InclusionBehavior & InclusionBehavior.IncludeInherited) == 0)
+                methods = methods.Where(mi => mi.DeclaringType.Equals(Type));
             foreach (var mi in methods)
             {
                 bool isIncludedByBehavior = (mi.IsStatic
@@ -113,7 +118,7 @@ namespace CmdLineLib
 
         IEnumerable<PropertyDefinition> GetIncludedProperties()
         {
-            var items = Type.GetProperties();
+            var items = Type.GetProperties().Where(p => p.GetSetMethod() != null);
             foreach (var item in items)
             {
                 bool isIncludedByBehavior = (item.GetGetMethod().IsStatic
@@ -126,7 +131,9 @@ namespace CmdLineLib
 
         IEnumerable<CmdLineParameter> GetCommonParameters()
         {
-            var properties = Type.GetProperties();
+            var properties = Type.GetProperties().Where(p => p.GetSetMethod() != null);
+            if ((InclusionBehavior & InclusionBehavior.IncludeInherited) == 0)
+                properties = properties.Where(p => p.DeclaringType.Equals(Type));
             foreach (var property in properties)
             {
                 bool isIncludedByBehavior = (property.GetGetMethod().IsStatic
