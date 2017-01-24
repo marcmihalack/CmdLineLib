@@ -88,9 +88,9 @@ public static void TraceRoute(string address, int count, int someOtherParameter)
 ```
 
 ###Arguments
-Arguments (method parameter or class property or variable) can be:
+Arguments (method parameters and/or class properties or fields included by CmdLine) can be:
  - a value type (**string**, **int**, etc.)
- - a **boolean**, which is also a value type, but it does not require a value - think of it as a switch - if it's there it's **on** (or **true**), if it's not there then it's **off** (or **false**); you can also specify a value if you want to be sure: ` /verbose=true `;  and yes, it can also have values **on**/**off**, **yes**/**no**, **true**/**false**, **0**/**1**
+ - a **boolean**, which is also a value type, but it does not require a value, so it acts as a switch: if it's there it's **on** (or **true**), if it's not there then it's **off** (or **false**): `/recursive`.  You can also specify a value if you want to be sure: `/recursive=false`.  And yes, it can have values **on**/**off**, **yes**/**no**, **true**/**false**, **0**/**1**
  - an array or value types (**string[]**, **int[]**, etc.), where arg values are separated by **commas** *without* spaces, e.i.: ` /values=1,3,4,5 `
  - an enum ` /verbosity=quiet `
  - flags (**enum** type with [System.FlagsAttribute](https://msdn.microsoft.com/en-us/library/system.flagsattribute.aspx), where arg values are separated by **commas** *without* spaces (nope, it is not a pipe '|' character for it would have to be escaped), e.i.: ` /flags=F1,F2 `
