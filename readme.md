@@ -63,6 +63,7 @@ By default all public class methods and properties, both static and non-static, 
 
 ###Attributes
 Use **CmdLine*Attribute** attributes to override method or argument name, provide additional help text, provide default value, exclude member from **CmdLine** processing, and whatnot.
+However none of them are required - all of the values (command, parameter names, types and default values, if any) are grabbed from code metadata by using [Reflection](https://msdn.microsoft.com/en-us/library/f7ykdhsy.aspx).  Attributes allow you to provide additional information (like help text) or to override names and default parameter values.
 
 **CmdLineArgAttribute** can be applied to any included method's parameter or included class field or property.
 ```csharp
@@ -87,6 +88,21 @@ public class Program { ... }
 public static void TraceRoute(string address, int count, int someOtherParameter) { ... }
 ```
 
+###Arguments
+Arguments (method parameters and/or class properties or fields included by CmdLine) can be:
+ - a value type (**string**, **int**, etc.)
+ - **boolean**, which is also a value type, but it does not require a value, so it acts as a switch: if it's there it's **on** (or **true**), if it's not there then it's **off** (or **false**): `/recursive`.  You can also specify a value if you want to be sure: `/recursive=false`.  And yes, it can have values **on**/**off**, **yes**/**no**, **true**/**false**, **0**/**1**
+ - an array or value types (**string[]**, **int[]**, etc.), where arg values are separated by **commas** *without* spaces, e.i.: ` /values=1,3,4,5 `
+ - **enum** with case insensitive comparison `/verbosity=quiet`
+ - flags (**enum** type with [System.FlagsAttribute](https://msdn.microsoft.com/en-us/library/system.flagsattribute.aspx), where arg values are separated by **commas** *without* spaces (nope, it is not a pipe '|' character for it would have to be escaped), e.i.: ` /flags=F1,F2 `
+ - any other type that can be converted from a **string** using a [TypeConverter](https://msdn.microsoft.com/en-us/library/system.componentmodel.typeconverter.aspx).
+
+CmdLine retrieves type converter by calling [TypeDescriptor.GetConverter()](https://msdn.microsoft.com/en-us/library/system.componentmodel.typedescriptor.getconverter.aspx) method.
+You can [create a custom type converter](https://msdn.microsoft.com/en-us/library/ayybcxe5.aspx) and it might work... I think.
+
+####Argument default values
+Argument is not required if its corresponding class member (method parameter, class property or field) has a default value.  Optionally you can use **CmdLineArgAttribute** to set a default value.
+
 ###Member Inclusion
 - All public members if the class **T** can be included in **CmdLine\<T\>** processing.  By default all public class methods and properties, both static and non-static, are included.
 - You can specify **default inclusion behavior** by passing `InclusionBehavior` flags to `CmdLineClassAttribute` constructor.
@@ -96,7 +112,17 @@ public static void TraceRoute(string address, int count, int someOtherParameter)
 - `// TODO: add factory interface/method to allow caller create instance based on arguments`
 
 ###Help
-By default **CmdLine** generates help based on the method and parameters' names.  You can provide additional information for class, method or argument by passing `helpText` parameter to the construtor of the corresponding attribute.
+By default **CmdLine** generates help based on the method and parameters' names.
+You can provide additional information for class, method or argument by passing `helpText` parameter to the construtor of the corresponding attribute:
+```csharp
+[CmdLineMethod(helpText:"Pings host 'count' number of times")]
+public static void Ping(
+	[CmdLineArg("host", helpText:"IP address or DNS name of the host to ping")]string address
+	, int count = 4)
+	{
+	    // ...
+	}
+```
 
 You can use "**help**" command to display help information:
 

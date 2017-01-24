@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using CmdLineLib.Attributes;
 
+/*
+ * TODOs
+ * - Add Create() to IInstancProvider that allows to create instance based on input parameters
+ */
+
 namespace CmdLineLib
 {
     public interface IInstanceProvider

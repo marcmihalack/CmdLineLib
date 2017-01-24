@@ -1,9 +1,10 @@
 ﻿using CmdLineLib.Attributes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace CmdLineLib.Tests.Classes
 {
-    [CmdLineClass(helpText:"Test class 1")]
+    [CmdLineClass(helpText:"Test class with static members")]
     public sealed class TestClassStatic
     {
         public static string GetMethodInvokedAndReset() { var method = methodInvoked; methodInvoked = null; return method; }
