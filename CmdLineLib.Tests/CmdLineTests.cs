@@ -97,6 +97,5 @@ namespace CmdLineLib.Tests
             var args = new[] { "gethashcode" };
             CmdLine<TestClassStatic>.Execute(args).Should().Be(-1);
         }
-
     }
 }

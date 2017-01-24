@@ -210,11 +210,16 @@ namespace CmdLineLib
                         catch (NotSupportedException ex)
                         {
                             if (throwOnError)
-                            {
-                                int n = i + 1;
-                                string s = (n == 1 ? "st" : (n == 2 ? "nd" : (n == 3 ? "rd" : "th")));
-                                throw new CmdLineArgException(Name, $"Cannot convert argument {Name}'s {n}{s} element to {Type.Name}", ex);
-                            }
+                                throw new CmdLineArgException(Name, $"Cannot convert argument {Name}'s element {i} to {Type.Name}: {ex.Message}", ex);
+                            value = null;
+                            return false;
+                        }
+                        catch (FormatException ex)
+                        {
+                            if (!Type.IsEnum)
+                                throw;
+                            if (throwOnError)
+                                throw new CmdLineArgException(Name, $"Cannot convert argument {Name}'s element {i} to {Type.Name}: {ex.Message}", ex);
                             value = null;
                             return false;
                         }
@@ -230,7 +235,16 @@ namespace CmdLineLib
                         catch (NotSupportedException ex)
                         {
                             if (throwOnError)
-                                throw new CmdLineArgException(Name, $"Cannot convert argument {Name} to {Type.Name}", ex);
+                                throw new CmdLineArgException(Name, $"Cannot convert argument {Name} to {Type.Name}: {ex.Message}", ex);
+                            value = null;
+                            return false;
+                        }
+                        catch (FormatException ex)
+                        {
+                            if (!Type.IsEnum)
+                                throw;
+                            if (throwOnError)
+                                throw new CmdLineArgException(Name, $"Cannot convert argument {Name} to {Type.Name}: {ex.Message}", ex);
                             value = null;
                             return false;
                         }

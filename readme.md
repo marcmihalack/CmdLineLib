@@ -87,6 +87,21 @@ public class Program { ... }
 public static void TraceRoute(string address, int count, int someOtherParameter) { ... }
 ```
 
+###Arguments
+Arguments (method parameter or class property or variable) can be:
+ - a value type (**string**, **int**, etc.)
+ - a **boolean**, which is also a value type, but it does not require a value - think of it as a switch - if it's there it's **on** (or **true**), if it's not there then it's **off** (or **false**); you can also specify a value if you want to be sure: ` /verbose=true `;  and yes, it can also have values **on**/**off**, **yes**/**no**, **true**/**false**, **0**/**1**
+ - an array or value types (**string[]**, **int[]**, etc.), where arg values are separated by **commas** *without* spaces, e.i.: ` /values=1,3,4,5 `
+ - an enum ` /verbosity=quiet `
+ - flags (**enum** type with [System.FlagsAttribute](https://msdn.microsoft.com/en-us/library/system.flagsattribute.aspx), where arg values are separated by **commas** *without* spaces (nope, it is not a pipe '|' character for it would have to be escaped), e.i.: ` /flags=F1,F2 `
+ - any other type that can be converted from a **string** using a [TypeConverter](https://msdn.microsoft.com/en-us/library/system.componentmodel.typeconverter.aspx).
+
+CmdLine retrieves type converter by calling [TypeDescriptor.GetConverter()](https://msdn.microsoft.com/en-us/library/system.componentmodel.typedescriptor.getconverter.aspx) method.
+You can [create a custom type converter](https://msdn.microsoft.com/en-us/library/ayybcxe5.aspx) and it might work... I think.
+
+####Argument default values
+Argument is not required if its corresponding class member (method parameter, class property or field) has a default value.  Optionally you can use **CmdLineArgAttribute** to set a default value.
+
 ###Member Inclusion
 - All public members if the class **T** can be included in **CmdLine\<T\>** processing.  By default all public class methods and properties, both static and non-static, are included.
 - You can specify **default inclusion behavior** by passing `InclusionBehavior` flags to `CmdLineClassAttribute` constructor.

@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Classes\TestClassStatic.cs" />
     <Compile Include="CmdLineTests.cs" />
+    <Compile Include="EnumParameterTests.cs" />
     <Compile Include="MethodInclusionBase.cs" />
     <Compile Include="MethodInclusion_IncludeInheritedTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
