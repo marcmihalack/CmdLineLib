@@ -63,6 +63,7 @@ By default all public class methods and properties, both static and non-static, 
 
 ###Attributes
 Use **CmdLine*Attribute** attributes to override method or argument name, provide additional help text, provide default value, exclude member from **CmdLine** processing, and whatnot.
+However none of them are required - all of the values (command, parameter names, types and default values, if any) are grabbed from code metadata by using [Reflection](https://msdn.microsoft.com/en-us/library/f7ykdhsy.aspx).  Attributes allow you to provide additional information (like help text) or to override names and default parameter values.
 
 **CmdLineArgAttribute** can be applied to any included method's parameter or included class field or property.
 ```csharp
@@ -111,7 +112,12 @@ Argument is not required if its corresponding class member (method parameter, cl
 - `// TODO: add factory interface/method to allow caller create instance based on arguments`
 
 ###Help
-By default **CmdLine** generates help based on the method and parameters' names.  You can provide additional information for class, method or argument by passing `helpText` parameter to the construtor of the corresponding attribute.
+By default **CmdLine** generates help based on the method and parameters' names.
+You can provide additional information for class, method or argument by passing `helpText` parameter to the construtor of the corresponding attribute:
+```csharp
+[CmdLineMethod(helpText:"Pings host 'count' number of times")]
+public static void Ping([CmdLineArg("host", helpText:"IP address or DNS name of the host to ping")]string address, int count = 4) { ... }
+```
 
 You can use "**help**" command to display help information:
 
