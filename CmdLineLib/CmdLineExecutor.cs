@@ -78,7 +78,6 @@ namespace CmdLineLib
             IDictionary<string, string> args = inputArgs.ToDictionary(p => p.Key, p => p.Value);
             //List<object> values = new List<object>();
             //List<CmdLineParameter> ps = new List<CmdLineParameter>();
-            Dictionary<string, Tuple<string, bool>> argValues = new Dictionary<string, Tuple<string, bool>>();
 
             var ps = method.Parameters.Select(p => ProcessParameter(p, args)).ToArray();
 

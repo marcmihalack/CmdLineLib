@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 
 namespace CmdLineLib
 {
-    [Serializable]
     public class CmdLineException : Exception
     {
         public CmdLineException() : base()
@@ -25,7 +24,6 @@ namespace CmdLineLib
         }
     }
 
-    [Serializable]
     public class CmdLineArgException : CmdLineException
     {
         public string ArgName { get; }
