@@ -44,6 +44,24 @@ namespace CmdLineLib.Tests.Classes
             Assert.AreEqual(count, list.Length);
         }
 
+        [CmdLineMethod("nullable")]
+        public static void TestMethodWithNullable(
+            int? value)
+        {
+            methodInvoked = "nullable";
+            Assert.IsTrue(value.HasValue);
+            Assert.AreEqual(value.Value, 3);
+        }
+
+        [CmdLineMethod("nullablewithdefault")]
+        public static void TestMethodWithNullableWithDefault(
+            int? value = null)
+        {
+            methodInvoked = "nullablewithdefault";
+            if(value.HasValue)
+                Assert.AreEqual(value.Value, 7);
+        }
+
         [CmdLineMethod("staticmethod")]
         public static void StaticMethod()
         {

@@ -44,16 +44,39 @@ namespace CmdLineLib
             return con;
         }
 
+        static string ToDisplayString(this Type type)
+        {
+            if (type.IsArray)
+            {
+                var ename = type.GetElementType().ToDisplayString();
+                return string.Concat("{", ename, ",", ename, ",...}");
+            }
+            if (type.IsEquivalentTo(typeof(Boolean)))
+                return "<flag>";
+            if (type.FullName.StartsWith("System.Nullable`1["))
+                return type.GetGenericArguments()[0].ToDisplayString();
+            var name = type.Name.ToLower();
+            var rx = new Regex(@"^([a-z]+)[0-9]{1,}$");
+            var match = rx.Match(name);
+            if (match.Success)
+            {
+                return string.Concat("<", match.Groups[1].Value, ">");
+            }
+            return string.Concat("<", name, ">");
+        }
+
         public static string ToDisplayString(this Type type, char argListSeparator)
         {
             var name = type.Name.ToLower();
             if (type.IsArray)
             {
-                var ename = type.GetElementType().ToDisplayString(argListSeparator);
-                return string.Concat("{", ename, ",", ename, ",...}");
+                var ename = type.GetElementType().ToDisplayString();
+                return string.Concat("{", ename, argListSeparator, ename, ",...}");
             }
             if (type.IsEquivalentTo(typeof(Boolean)))
                 return "<flag>";
+            if (type.IsGenericType && type.FullName.StartsWith("System.Nullable`1["))
+                return type.GetGenericArguments()[0].ToDisplayString();
             var rx = new Regex(@"^([a-z]+)[0-9]{1,}$");
             var match = rx.Match(name);
             if (match.Success)
@@ -67,7 +90,8 @@ namespace CmdLineLib
                 return string.Concat(type.GetElementType().ToDisplayName(), "[]");
             if (type.IsEquivalentTo(typeof(Boolean)))
                 return "flag";
-
+            if (type.IsGenericType && type.FullName.StartsWith("System.Nullable`1["))
+                return type.GetGenericArguments()[0].ToDisplayName();
             var name = type.Name.ToLower();
             var rx = new Regex(@"^([a-z]+)[0-9]{1,}$");
             var match = rx.Match(name);
@@ -90,31 +114,22 @@ namespace CmdLineLib
 
         public static string TypeToDisplayString(this CmdLineParameter p)
         {
-            var type = p.Type;
+            Type type = p.Type;
             if (type.IsArray)
             {
                 var ename = type.GetElementType().ToDisplayString(p.Config.ArgListSeparator);
                 return string.Concat("{", ename, ",...}");
             }
-            if (type.IsEquivalentTo(typeof(Boolean)))
-                return "<flag>";
-
-            var name = type.Name.ToLower();
-            var rx = new Regex(@"^([a-z]+)[0-9]{1,}$");
-            var match = rx.Match(name);
-            if (match.Success)
-            {
-                return string.Concat("<", match.Groups[1].Value, ">");
-            }
-            return string.Concat("<", name, ">");
+            return ToDisplayString(type);
         }
 
         static IColorConsole WriteShortHelp(this IColorConsole con, CmdLineParameter p)
         {
             bool optional = p.HasDefaultValue;
+            Type type = p.Type;
             var color = optional ? OptionalParameterColor : ParameterColor;
             con.w(" ");
-            if (p.Type.IsEquivalentTo(typeof(Boolean)))
+            if (type.IsEquivalentTo(typeof(Boolean)))
             {
                 con.w("[{0}", p.Config.ArgStartsWith).w(OptionalParameterColor, p.Name).w("]");
                 if (optional)
@@ -122,12 +137,13 @@ namespace CmdLineLib
             }
             else
             {
+                Type nullable = type.IsGenericType && type.FullName.StartsWith("System.Nullable`1[") ? type.GetGenericArguments()[0] : null;
                 if (optional)
                     con.w("[");
-                con.w("{0}", p.Config.ArgStartsWith).w(color, p.Name).w("=").w("{0}", p.TypeToDisplayString());
+                con.w("{0}", p.Config.ArgStartsWith).w(color, p.Name).w("=").w("{0}", nullable != null ? nullable.ToDisplayString() : p.TypeToDisplayString());
                 if (optional)
                 {
-                    if (!p.Type.IsEquivalentTo(typeof(string)) || p.DefaultValue != null)
+                    if (nullable == null && !type.IsEquivalentTo(typeof(string)) || p.DefaultValue != null)
                         con.w("(default=").w(DefaultValueColor, "{0}", p.DefaultValueToDisplayString()).w(")");
                     con.w("]");
                 }
@@ -138,14 +154,15 @@ namespace CmdLineLib
         static IColorConsole WriteHelp(this IColorConsole con, CmdLineParameter p)
         {
             bool optional = p.HasDefaultValue;
-            bool isFlag = p.Type.IsEquivalentTo(typeof(Boolean));
+            Type type = p.Type;
+            bool isFlag = type.IsEquivalentTo(typeof(Boolean));
             var color = optional || isFlag ? OptionalParameterColor : ParameterColor;
 
-            con.w(Indent).w(color, p.Name.PadRight(7)).w(" - {0}", p.Type.ToDisplayName());
+            con.w(Indent).w(color, p.Name.PadRight(7)).w(" - {0}", type.ToDisplayName());
             if (p.HelpText != null)
-                con.w(p.HelpText);
+                con.w("{0}", p.HelpText);
 
-            if (p.Type.IsEquivalentTo(typeof(Boolean)))
+            if (type.IsEquivalentTo(typeof(Boolean)))
             {
                 if (optional)
                 {
@@ -154,9 +171,10 @@ namespace CmdLineLib
             }
             else
             {
+                Type nullable = type.IsGenericType && type.FullName.StartsWith("System.Nullable`1[") ? type.GetGenericArguments()[0] : null;
                 if (optional)
                 {
-                    if (!p.Type.IsEquivalentTo(typeof(string)) || p.DefaultValue != null)
+                    if (nullable == null && !type.IsEquivalentTo(typeof(string)) || p.DefaultValue != null)
                         con.w(" (default=").w(DefaultValueColor, "{0}", p.DefaultValueToDisplayString()).w(")");
                     //con.w("]");
                 }

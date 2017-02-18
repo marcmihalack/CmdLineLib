@@ -97,5 +97,36 @@ namespace CmdLineLib.Tests
             var args = new[] { "gethashcode" };
             CmdLine<TestClassStatic>.Execute(args).Should().Be(-1);
         }
+        [TestMethod]
+        public void WHEN_MethodHasNullableArg_AND_ArgIsNotProvided_THEN_MethodIsNotExecuted()
+        {
+            var args = new[] { "nullable" };
+            CmdLine<TestClassStatic>.Execute(args).Should().Be(-1);
+            TestClassStatic.GetMethodInvokedAndReset().Should().BeNull();
+        }
+
+        [TestMethod]
+        public void WHEN_MethodHasNullableArg_AND_ArgIsProvided_THEN_MethodIsExecuted()
+        {
+            var args = new[] { "nullable", "/value=3" };
+            CmdLine<TestClassStatic>.Execute(args).Should().Be(0);
+            TestClassStatic.GetMethodInvokedAndReset().Should().Be("nullable");
+        }
+
+        [TestMethod]
+        public void WHEN_MethodHasNullableArgWithDefault_AND_ArgIsProvided_THEN_MethodIsExecuted()
+        {
+            var args = new[] { "nullablewithdefault", "/value=7" };
+            CmdLine<TestClassStatic>.Execute(args).Should().Be(0);
+            TestClassStatic.GetMethodInvokedAndReset().Should().Be("nullablewithdefault");
+        }
+
+        [TestMethod]
+        public void WHEN_MethodHasNullableArgWithDefault_AND_ArgIsNotProvided_THEN_MethodIsExecuted()
+        {
+            var args = new[] { "nullablewithdefault" };
+            CmdLine<TestClassStatic>.Execute(args).Should().Be(0);
+            TestClassStatic.GetMethodInvokedAndReset().Should().Be("nullablewithdefault");
+        }
     }
 }

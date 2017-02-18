@@ -34,6 +34,16 @@ namespace CmdLineApp
             Console.WriteLine($"RunWithTwo: value={value} stuff={stuff} something={something}");
         }
 
+        static public void RunWithNullable(int? value)
+        {
+            Console.WriteLine($"RunWithNullable: hasvalue={value.HasValue} value={value.Value}");
+        }
+
+        static public void RunWithNullableWithDefault(int? value = null)
+        {
+            Console.WriteLine("RunWithNullableWithDefault: hasvalue={0} value={1}", value.HasValue, value.HasValue ? value.Value.ToString() : "null");
+        }
+
         static public void RunWithArray(int value, int[] array)
         {
             var str = array.Aggregate((string)null, (s, i) => (s == null ? $"{i}" : $"{s},{i}"));
