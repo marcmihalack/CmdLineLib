@@ -12,6 +12,8 @@
     <description>CmdLineLib allows to create mapping of method parameters to command line arguments, provides necessary conversion and generates help.  Highly configurable and flexible.</description>
     <summary>Strongly typed command line</summary>
     <releaseNotes>
+    1.1.2:
+      - Fixed nullable display.
     1.1.1:
       - Fixed handling of enum types when invalid value passed.
       - Fixed handling of enum type with FlagsAttribute and multiple flags passed.
