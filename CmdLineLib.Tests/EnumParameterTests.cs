@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CmdLineLib.Tests.Classes;
 using FluentAssertions;
-using CmdLineLib.Attributes;
 using System;
 
 namespace CmdLineLib.Tests
@@ -70,7 +68,6 @@ namespace CmdLineLib.Tests
         [TestInitialize]
         public void InitializeTest()
         {
-            TestClassStatic.Reset();
         }
 
         [TestMethod]

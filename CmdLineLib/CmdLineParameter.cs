@@ -49,7 +49,8 @@ namespace CmdLineLib
                 DefaultValue = null;
             }
 
-            SetDefaultValue();
+            if (HasDefaultValue && DefaultValue != null && !DefaultValue.GetType().IsEquivalentTo(Type))
+                throw new CmdLineException("CmdLine incorrect setup: invalid default value type for parameter " + Name);
         }
 
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -81,7 +82,8 @@ namespace CmdLineLib
                 DefaultValue = null;
             }
 
-            SetDefaultValue();
+            if (HasDefaultValue && DefaultValue != null && !DefaultValue.GetType().IsEquivalentTo(Type))
+                throw new CmdLineException("CmdLine error: invalid default value type for parameter " + Name);
         }
 
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -111,6 +113,8 @@ namespace CmdLineLib
                 HasDefaultValue = false;
                 DefaultValue = null;
             }
+            if (HasDefaultValue && DefaultValue != null && !DefaultValue.GetType().IsEquivalentTo(Type))
+                throw new CmdLineException("CmdLine error: invalid default value type for parameter " + Name);
         }
 
         public void SetValue(object instance, object value)
@@ -124,16 +128,6 @@ namespace CmdLineLib
         }
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-        void SetDefaultValue()
-        {
-            if (HasDefaultValue && DefaultValue != null)
-            {
-                if (!DefaultValue.GetType().IsEquivalentTo(Type))
-                    throw new CmdLineException("Invalid default value type");
-            }
-        }
-
-        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         /*
         static CmdLineArgAttribute getArgAttribute(ICustomAttributeProvider attrProvider) //IEnumerable<CmdLineBaseAttribute> attributes
         {
