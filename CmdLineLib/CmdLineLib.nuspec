@@ -12,6 +12,8 @@
     <description>CmdLineLib allows to create mapping of method parameters to command line arguments, provides necessary conversion and generates help.  Highly configurable and flexible.</description>
     <summary>Strongly typed command line</summary>
     <releaseNotes>
+    1.1.3:
+      - Added descriptive exception message for invalid default value type.
     1.1.2:
       - Fixed nullable display.
     1.1.1:
