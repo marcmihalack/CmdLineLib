@@ -148,13 +148,30 @@ namespace CmdLineLib
 
         static public void Validate()
         {
+            foreach (var info in typeof(T).GetFields())
+                ValidateArg(info.Name, info.FieldType, info.GetCustomAttributes(false));
+            foreach (var info in typeof(T).GetFields())
+                ValidateArg(info.Name, info.FieldType, info.GetCustomAttributes(false));
             var methods = typeof(T).GetMethods().Where(
-                    mi => mi.GetCustomAttributes(false).Any(attr => attr is CmdLineMethodAttribute));
+                mi => !mi.GetCustomAttributes(false).Any(attr => attr is CmdLineExcludeAttribute));
             foreach (var method in methods)
             {
-                if (method.GetCustomAttributes(false).Count(attr => attr is CmdLineMethodAttribute) != 1)
+                foreach (var info in method.GetParameters())
+                    ValidateArg(info.Name, info.ParameterType, info.GetCustomAttributes(false));
+            }
+        }
+
+        static void ValidateArg(string name, Type type, object[] attrs)
+        {
+            if (attrs.Any(a => a is CmdLineExcludeAttribute))
+                return;
+            foreach (var attr in attrs.Select(a => a as CmdLineArgAttribute).Where(a => a != null))
+            {
+                if (attr.Default != null)
                 {
-                    // error
+                    if (!attr.HasDefault)
+                        throw new Exception("CmdLineArgAttribute.Default must be null when HasDefault is false");
+                    attr.Default.GetType().IsAssignableFrom(type);
                 }
             }
         }

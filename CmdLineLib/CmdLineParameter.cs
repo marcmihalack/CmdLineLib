@@ -126,44 +126,8 @@ namespace CmdLineLib
             else
                 throw new Exception("Cannot set value on parameter");
         }
+
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-        /*
-        static CmdLineArgAttribute getArgAttribute(ICustomAttributeProvider attrProvider) //IEnumerable<CmdLineBaseAttribute> attributes
-        {
-            var attributes = attrProvider.GetCustomAttributes(typeof(CmdLineBaseAttribute), false).Select(p => p as CmdLineBaseAttribute);
-            CmdLineArgAttribute argAttribute = null;
-            foreach (var attribute in attributes)
-            {
-                if (attribute is CmdLineExcludeAttribute)
-                    throw new CmdLineArgException("Attribute is excluded");
-                else if (argAttribute != null)
-                    throw new CmdLineArgException("Attribute already assigned");
-                else
-                {
-                    argAttribute = attribute as CmdLineArgAttribute;
-                    if (argAttribute == null)
-                        throw new CmdLineArgException(string.Format("Unexpected attribute {0}", typeof(Attribute).Name));
-                }
-            }
-            return argAttribute;
-        }
-        */
-        // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-        //public static ByNameComparer CompareByName = new ByNameComparer();
-        public class ByNameComparer : IEqualityComparer<CmdLineParameter>
-        {
-            public bool Equals(CmdLineParameter x, CmdLineParameter y)
-            {
-                return x.Name.Equals(y.Name);
-            }
-
-            public int GetHashCode(CmdLineParameter obj)
-            {
-                return obj.Name.GetHashCode();
-            }
-        }
 
         public bool TryGetParameterValue(bool isArgProvided, string parameterValue, out object value)
         {
