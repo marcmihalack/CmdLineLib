@@ -11,7 +11,11 @@ namespace CmdLineApp
 
         static void Main(string[] args)
         {
-            AppGuard.Invoke(() => { CmdLine<Program>.Validate(); CmdLine<Program>.Execute(args); });
+            AppGuard.Invoke(() =>
+            {
+                CmdLine<Program>.Validate();
+                CmdLine<Program>.Execute(args);
+            });
         }
 
         static public void RunWithOne([CmdLineArg(helpText: "Value to pass")]int value)

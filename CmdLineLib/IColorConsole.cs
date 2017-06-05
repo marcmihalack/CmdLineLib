@@ -17,5 +17,6 @@ namespace CmdLineLib
         IColorConsole wl(object s);
         IColorConsole wl(string s, params object[] args);
         IColorConsole flush();
+        bool isTTY { get; }
     }
 }

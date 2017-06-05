@@ -3,12 +3,47 @@ using System.Collections.Generic;
 
 namespace CmdLineLib
 {
+    internal class ColorConsoleFactory
+    {
+        static public IColorConsole CreateConsole()
+        {
+            return IsTTY ? new TTYColorConsole() : new ColorConsole();
+        }
+
+        static bool IsTTY
+        {
+            get
+            {
+                int height;
+                try
+                {
+                    height = Console.WindowHeight;
+                }
+                catch
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
+
     public class ColorConsole : IColorConsole
     {
         static public IColorConsole Default
         {
-            get { return defaultConsole ?? (defaultConsole = new ColorConsole()); }
+            get { return defaultConsole ?? (defaultConsole = ColorConsoleFactory.CreateConsole()); }
         }
+
+        public ColorConsole()
+            : this(false)
+        {
+        }
+        internal ColorConsole(bool isTTY)
+        {
+            this.isTTY = isTTY;
+        }
+
         public ConsoleColor WarningFgColor = ConsoleColor.Yellow;
         public ConsoleColor ErrorFgColor = ConsoleColor.Red;
         // when using methods with fgColor and bgColor use TransparentColor to not change the fgColor
@@ -63,9 +98,9 @@ namespace CmdLineLib
         {
             lock (m_lock)
             {
-                Console.ForegroundColor = fgColor;
+                SetForegroundColor(fgColor);
                 Console.Write(s);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -74,9 +109,9 @@ namespace CmdLineLib
         {
             lock (m_lock)
             {
-                Console.ForegroundColor = fgColor;
+                SetForegroundColor(fgColor);
                 Console.Write(s, args);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -85,9 +120,9 @@ namespace CmdLineLib
         {
             lock (m_lock)
             {
-                Console.ForegroundColor = fgColor;
+                SetForegroundColor(fgColor);
                 Console.WriteLine(s);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -96,9 +131,9 @@ namespace CmdLineLib
         {
             lock (m_lock)
             {
-                Console.ForegroundColor = fgColor;
+                SetForegroundColor(fgColor);
                 Console.WriteLine(s, args);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -108,10 +143,10 @@ namespace CmdLineLib
             lock (m_lock)
             {
                 if (fgColor != TransparentColor)
-                    Console.ForegroundColor = fgColor;
-                Console.BackgroundColor = bgColor;
+                    SetForegroundColor(fgColor);
+                SetBackgroundColor(bgColor);
                 Console.Write(s);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -121,10 +156,10 @@ namespace CmdLineLib
             lock (m_lock)
             {
                 if (fgColor != TransparentColor)
-                    Console.ForegroundColor = fgColor;
-                Console.BackgroundColor = bgColor;
+                    SetForegroundColor(fgColor);
+                SetBackgroundColor(bgColor);
                 Console.Write(s, args);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -134,10 +169,10 @@ namespace CmdLineLib
             lock (m_lock)
             {
                 if (fgColor != TransparentColor)
-                    Console.ForegroundColor = fgColor;
-                Console.BackgroundColor = bgColor;
+                    SetForegroundColor(fgColor);
+                SetBackgroundColor(bgColor);
                 Console.WriteLine(s);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -147,10 +182,10 @@ namespace CmdLineLib
             lock (m_lock)
             {
                 if (fgColor != TransparentColor)
-                    Console.ForegroundColor = fgColor;
-                Console.BackgroundColor = bgColor;
+                    SetForegroundColor(fgColor);
+                SetBackgroundColor(bgColor);
                 Console.WriteLine(s, args);
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -159,7 +194,7 @@ namespace CmdLineLib
         {
             lock (m_lock)
             {
-                Console.ForegroundColor = fgColor;
+                SetForegroundColor(fgColor);
                 return this;
             }
         }
@@ -177,7 +212,7 @@ namespace CmdLineLib
         {
             lock (m_lock)
             {
-                Console.ResetColor();
+                ResetColor();
                 return this;
             }
         }
@@ -188,7 +223,7 @@ namespace CmdLineLib
             {
                 Console.ForegroundColor = WarningFgColor;
                 Console.WriteLine(s);
-                Console.ResetColor();
+                ResetColor();
             }
         }
 
@@ -198,7 +233,7 @@ namespace CmdLineLib
             {
                 Console.ForegroundColor = WarningFgColor;
                 Console.WriteLine(s, args);
-                Console.ResetColor();
+                ResetColor();
             }
         }
 
@@ -208,7 +243,7 @@ namespace CmdLineLib
             {
                 Console.ForegroundColor = ErrorFgColor;
                 Console.WriteLine(s);
-                Console.ResetColor();
+                ResetColor();
             }
         }
 
@@ -218,7 +253,7 @@ namespace CmdLineLib
             {
                 Console.ForegroundColor = ErrorFgColor;
                 Console.WriteLine(s, args);
-                Console.ResetColor();
+                ResetColor();
             }
         }
 
@@ -227,6 +262,23 @@ namespace CmdLineLib
             lock (m_lock)
                 Console.Out.Flush();
             return this;
+        }
+
+        public bool isTTY { get; internal protected set; }
+
+        virtual protected internal void SetForegroundColor(ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+        }
+
+        virtual protected internal void SetBackgroundColor(ConsoleColor color)
+        {
+            Console.BackgroundColor = color;
+        }
+
+        virtual protected internal void ResetColor()
+        {
+            Console.ResetColor();
         }
 
         // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -263,7 +315,7 @@ namespace CmdLineLib
             rclr();
         }
 
-        static ColorConsole defaultConsole = null;
+        static IColorConsole defaultConsole = null;
         static object m_lock = new object();
     }
 }

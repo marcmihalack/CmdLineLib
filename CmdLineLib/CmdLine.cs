@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CmdLineLib.Attributes;
+using System.Configuration;
 
 /*
  * TODOs
@@ -159,6 +160,13 @@ namespace CmdLineLib
                 foreach (var info in method.GetParameters())
                     ValidateArg(info.Name, info.ParameterType, info.GetCustomAttributes(false));
             }
+            var section = ConfigurationManager.GetSection("CmdLine") as Config.CmdLine;
+            if (section != null)
+            {
+                foreach (Config.ParameterElement parameter in section.Parameters)
+                {
+                }
+            }
         }
 
         static void ValidateArg(string name, Type type, object[] attrs)
@@ -171,7 +179,8 @@ namespace CmdLineLib
                 {
                     if (!attr.HasDefault)
                         throw new Exception("CmdLineArgAttribute.Default must be null when HasDefault is false");
-                    attr.Default.GetType().IsAssignableFrom(type);
+                    if (!attr.Default.GetType().IsAssignableFrom(type))
+                        con.wl($"Default value is convertable to parameter {name} type {type.FullName}");
                 }
             }
         }
