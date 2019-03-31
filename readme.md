@@ -70,7 +70,7 @@ Now you need to call
 
 	net.exe ping -address=192.168.1.1
 
-Starting from version 1.2.0 the default value of `CmdLineConfig.ArgStartsWith` is set to '/' for DOS cmd prompt, and '-' for bash interpreters (cygwin, msys2, etc.).
+Starting from version 1.2.0 the default value of `CmdLineConfig.ArgStartsWith` is set to '/' for DOS cmd prompt, and '-' for bash interpreters (cygwin, msys2, etc.).  Explicitly set value is not affected.
 
 Values of array parameters must be separated with `CmdLineConfig.ArgListSeparator` (default ','), and spaces are not allowed between values:
 
