@@ -4,19 +4,19 @@ Command line library with strongly typed mapping of app input arguments to metho
 
 ### What's new
 
-- 1.2.0:
+- 1.2.0
     - Added SystemConsole handling common system console features
     - Added AnsiColorConsole to support ANSI console colors
     - Changing default ArgStartsWith to be '/' for non-TTY and '-' for TTY console
       Does not affect property value if explicitly set
-- 1.1.3:
+- 1.1.3
     - Added descriptive exception message for invalid default value type.
-- 1.1.2:
+- 1.1.2
     - Fixed nullable display.
-- 1.1.1:
+- 1.1.1
     - Fixed handling of enum types when invalid value passed.
    - Fixed handling of enum type with FlagsAttribute and multiple flags passed.
-- 1.1.0:
+- 1.1.0
    - Added IncludeInherited inclusion flags; inherited members are excluded by default.
    - Fixed arg not found bug due to incorrect name comparison used.
 
