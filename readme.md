@@ -7,8 +7,6 @@ Command line library with strongly typed mapping of app input arguments to metho
 - 1.2.0
     - Added SystemConsole handling common system console features
     - Added AnsiColorConsole to support ANSI console colors
-    - Changing default ArgStartsWith to be '/' for non-TTY and '-' for TTY console
-      Does not affect property value if explicitly set
 - 1.1.3
     - Added descriptive exception message for invalid default value type.
 - 1.1.2
@@ -70,7 +68,7 @@ Now you need to call
 
 	net.exe ping -address=192.168.1.1
 
-Starting from version 1.2.0 the default value of `CmdLineConfig.ArgStartsWith` is set to '/' for DOS cmd prompt, and '-' for bash interpreters (cygwin, msys2, etc.).  Explicitly set value is not affected.
+**Note**: for the command line app to work in both cmd prompt and bash interpreters (cygwin, msys2, etc.) I recomment to use '-' as an argument separator.
 
 Values of array parameters must be separated with `CmdLineConfig.ArgListSeparator` (default ','), and spaces are not allowed between values:
 

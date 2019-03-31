@@ -11,7 +11,7 @@ namespace CmdLineLib
         {
             NameComparison = StringComparison.CurrentCultureIgnoreCase;
             ArgListSeparator = ',';
-            ArgStartsWith = SystemConsole.IsTTY ? '-' : '/';
+            ArgStartsWith = '/';
             ArgSeparator = '=';
             RequiresCommand = true;
         }

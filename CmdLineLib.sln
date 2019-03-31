@@ -1,13 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdLineLib", "CmdLineLib\CmdLineLib.csproj", "{297443C3-B969-4870-AE7F-B83B4AACA15F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdLineLib.Tests", "CmdLineLib.Tests\CmdLineLib.Tests.csproj", "{51413878-BDEF-4E42-A1BB-A3A15FD5D544}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CmdLineApp", "CmdLineApp\CmdLineApp.csproj", "{022E0BE0-AB4B-4383-9E8E-95B3F49E60B2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C32D7733-1246-471F-9E0C-0134B29B17DB}"
+	ProjectSection(SolutionItems) = preProject
+		build.cmd = build.cmd
+		CmdLine.ruleset = CmdLine.ruleset
+		Common.props = Common.props
+		Common.targets = Common.targets
+		Common.tasks = Common.tasks
+		LICENSE = LICENSE
+		NuGet.config = NuGet.config
+		readme.md = readme.md
+		Version.props = Version.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +43,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F85E5CD4-8865-426F-9495-38595062E070}
 	EndGlobalSection
 EndGlobal

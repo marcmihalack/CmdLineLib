@@ -8,8 +8,6 @@ namespace CmdLineLib
     {
         static public IColorConsole CreateColorConsole()
         {
-            if (IsTTY)
-                return new AnsiColorConsole(false);
             if (TrySetAnsiConsole())
                 return new AnsiColorConsole(false);
             return new ColorConsole();
@@ -39,25 +37,25 @@ namespace CmdLineLib
             return SetConsoleMode(iStdOut, outConsoleMode);
         }
 
-        static bool? _IsTTY;
-        static internal bool IsTTY
+        static bool? _HasConsoleWindow;
+        static internal bool HasConsoleWindow
         {
             get
             {
-                if (_IsTTY == null)
+                if (_HasConsoleWindow == null)
                 {
                     int height = 0;
                     try
                     {
                         height = Console.WindowHeight;
-                        _IsTTY = false;
+                        _HasConsoleWindow = false;
                     }
                     catch (System.IO.IOException)
                     {
-                        _IsTTY = true;
+                        _HasConsoleWindow = true;
                     }
                 }
-                return _IsTTY.Value;
+                return _HasConsoleWindow.Value;
             }
         }
     }

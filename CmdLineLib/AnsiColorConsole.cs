@@ -8,9 +8,8 @@ namespace CmdLineLib
         internal AnsiColorConsole(bool trySet)
         {
             if (trySet)
-                if (!SystemConsole.IsTTY)
-                    if (!SystemConsole.TrySetAnsiConsole())
-                        throw new NotSupportedException("ANSI console is not supported");
+                if (!SystemConsole.TrySetAnsiConsole())
+                    throw new NotSupportedException("ANSI console is not supported");
         }
 
         public AnsiColorConsole()
