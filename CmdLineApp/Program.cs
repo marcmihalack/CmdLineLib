@@ -11,7 +11,192 @@ namespace CmdLineApp
 
         static void Main(string[] args)
         {
-            AppGuard.Invoke(() => CmdLine<Program>.Execute(args));
+            AppGuard.Invoke(() => CmdLine<Program>.Execute(args, new CmdLineConfig { ArgStartsWith = '-' }));
+            AppGuard.DebugReadLine();
+        }
+
+        static void WriteForegroundColors()
+        {
+            DoColor(false);
+        }
+
+        static void WriteBackgroundColors()
+        {
+            DoColor(true);
+        }
+
+        static void DoColor(bool doBackground)
+        {
+            var c2 = new AnsiColorConsole();
+            Console.WriteLine(doBackground ? "Background" : "Foreground");
+
+            int ansix = doBackground ? 4 : 3;
+            string text = doBackground ? "ab" : "\u2588\u2588";
+            Console.Write("ANSI [0-7] :");
+            for (int i = 0; i < 8; i++)
+            {
+                var c = i;
+                Console.Write($"\u001b[{ansix}{c}m{c,2}{text}");
+            }
+            Console.WriteLine("\u001b[0m");
+            Console.Write("DOS  [0-7] :");
+            for (int i = 0; i < 8; i++)
+            {
+                if (doBackground)
+                    Console.BackgroundColor = (ConsoleColor)i;
+                else
+                    Console.ForegroundColor = (ConsoleColor)i;
+                Console.Write($"{i,2}{text}");
+            }
+            Console.WriteLine();
+            Console.ResetColor();
+            Console.Write("ANSI [8-15]:");
+            for (int i = 0; i < 8; i++)
+            {
+                var c = i;
+                Console.Write($"\u001b[{ansix}{c};1m{c,2}{text}");
+            }
+            Console.WriteLine("\u001b[0m");
+            if (doBackground)
+            {
+                Console.Write("ANSIx[8-15]:");
+                for (int i = 0; i < 8; i++)
+                {
+                    var c = i;
+                    Console.Write($"\u001b[48;5;{c + 8}m{c,2}{text}");
+                }
+                Console.WriteLine("\u001b[0m");
+            }
+
+            Console.Write("DOS  [8-15]:");
+            for (int i = 8; i < 16; i++)
+            {
+                if (doBackground)
+                    Console.BackgroundColor = (ConsoleColor)i;
+                else
+                    Console.ForegroundColor = (ConsoleColor)i;
+                Console.Write($"{i,2}{text}");
+            }
+            Console.ResetColor();
+            Console.WriteLine();
+
+            Console.WriteLine("IColorConsole implementations:");
+            var c1 = new ColorConsole();
+            Console.Write("DOS :");
+            for (int i = 0; i < 16; i++)
+                if (doBackground)
+                    c1.w(c1.TransparentColor, (ConsoleColor)i, $"{i,2}{text}");
+                else
+                    c1.w((ConsoleColor)i, $"{i,2}{text}");
+            c1.wl();
+            Console.Write("ANSI:");
+            for (int i = 0; i < 16; i++)
+                if (doBackground)
+                    c2.w((ConsoleColor)(-1), (ConsoleColor)i, $"{i,2}{text}");
+                else
+                    c2.w((ConsoleColor)i, $"{i,2}{text}");
+            c2.wl();
+        }
+
+        static void WriteAnsiColorTables()
+        {
+            WriteAnsiForegroundTables();
+            WriteAnsiBackgroundTables();
+        }
+
+        static void WriteAnsiBackgroundTables()
+        {
+            Console.WriteLine("Background 256");
+            for (int j = 0; j < 32; j++)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    var c = j * 8 + i;
+                    Console.Write($"\u001b[48;5;{c}m {c,3}ab ");
+                }
+                Console.WriteLine("\u001b[0m");
+            }
+            Console.Write("\u001b[0m");
+        }
+
+        static void WriteAnsiForegroundTables()
+        {
+            const string text = "ab\u2588\u2588";
+            Console.WriteLine("Foreground tables");
+            Console.WriteLine("Foreground 16");
+            for (int i = 0; i < 8; i++)
+                Console.Write($"\u001b[3{i}m{i,2}{text}");
+            for (int i = 0; i < 8; i++)
+                Console.Write($"\u001b[3{i};1m{i,2}{text}");
+            Console.WriteLine("\u001b[0m");
+            Console.WriteLine("Foreground 256");
+            for (int j = 0; j < 2; j++)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    var c = j * 8 + i;
+                    Console.Write($"\u001b[38;5;{c}m{c,3}\u2588\u2588");
+                }
+                Console.WriteLine();
+            }
+            Console.Write("\u001b[0m");
+            for (int k = 0; k < 6; k++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var c = 16 + ((k * 6 + j) * 6) + i;
+                        Console.Write($"\u001b[38;5;{c}m{c,3}\u2588\u2588");
+                    }
+                    if ((j & 1) == 1)
+                        Console.WriteLine();
+                }
+            }
+            Console.Write("\u001b[0m");
+            for (int j = 0; j < 3; j++)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    var c = 232 + j * 8 + i;
+                    Console.Write($"\u001b[38;5;{c}m{c,3}\u2588\u2588");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("\u001b[0m-- 256");
+            for (int k = 0; k < 6; k++)
+            {
+                for (int j = 0; j < 6; j++)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var c = 16 + ((k * 6 + j) * 6) + i;
+                        Console.Write($"\u001b[38;5;{c}m\u2588\u2588\u2588");
+                    }
+                    Console.Write("   ");
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var c = 16 + ((j * 6 + k) * 6) + i;
+                        Console.Write($"\u001b[38;5;{c}m\u2588\u2588\u2588");
+                    }
+                    Console.Write("   ");
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var c = 16 + ((i * 6 + j) * 6) + k;
+                        Console.Write($"\u001b[38;5;{c}m\u2588\u2588\u2588");
+                    }
+                    Console.WriteLine("\u001b[0m");
+                }
+            }
+            Console.WriteLine("\u001b[0m-- Foreground tables");
+        }
+
+        [CmdLineMethod("color")]
+        static public void DoColor()
+        {
+            WriteForegroundColors();
+            WriteBackgroundColors();
+            WriteAnsiColorTables();
         }
 
         static public void RunWithOne([CmdLineArg(helpText: "Value to pass")]int value)

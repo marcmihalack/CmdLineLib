@@ -30,9 +30,6 @@ namespace CmdLineLib
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr GetStdHandle(int nStdHandle);
 
-        //[DllImport("kernel32.dll")]
-        //static extern uint GetLastError();
-
         static internal bool TrySetAnsiConsole()
         {
             var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
