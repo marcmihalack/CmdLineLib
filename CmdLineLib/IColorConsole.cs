@@ -1,4 +1,5 @@
 ﻿using System;
+#pragma warning disable IDE1006 // Naming Styles
 namespace CmdLineLib
 {
     public interface IColorConsole
@@ -19,3 +20,4 @@ namespace CmdLineLib
         IColorConsole flush();
     }
 }
+#pragma warning restore IDE1006 // Naming Styles

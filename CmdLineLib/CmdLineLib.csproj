@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnsiColorConsole.cs" />
     <Compile Include="Attributes\CmdLineArgAttribute.cs" />
     <Compile Include="Attributes\CmdLineBaseAttribute.cs" />
     <Compile Include="Attributes\CmdLineClassAttribute.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="IColorConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="SystemConsole.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
