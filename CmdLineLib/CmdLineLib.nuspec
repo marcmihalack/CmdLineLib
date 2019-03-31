@@ -12,12 +12,12 @@
     <description>CmdLineLib allows to create mapping of method parameters to command line arguments, provides necessary conversion and generates help.  Highly configurable and flexible.</description>
     <summary>Strongly typed command line</summary>
     <releaseNotes>
-      - Added SystemConsole handling common system console features
-      - Added AnsiColorConsole to support ANSI console colors
-      - Changing default ArgStartsWith to be '/' for non-TTY and '-' for TTY console
-        Does not affect property value if explicitly set
+      - Added SystemConsole handling common system console features.
+      - Added AnsiColorConsole to support ANSI console colors.
+      - Changing default ArgStartsWith to be '/' for non-TTY and '-' for TTY console,
+        does not affect property value if explicitly set.
     </releaseNotes>
-    <copyright>2013-2017 © Marc Mihalack. All rights reserved.</copyright>
+    <copyright>2015-2019 © Marc Mihalack. All rights reserved.</copyright>
     <language>en-US</language>
     <tags>command line cmdline cli console parameters</tags>
   </metadata>
