@@ -39,7 +39,7 @@ namespace CmdLineLib
                 else
                     fg = $"\u001b[3{c}m";
             }
-            int bc = ConsoleColorMap[((int)bgColor)];
+            int bc = ConsoleColorMap[(int)bgColor];
             lock (SystemConsole.Lock)
                 Console.Write($"{fg}\u001b[48;5;{bc}m{s}\u001b[0m");
             return this;
