@@ -11,7 +11,7 @@ namespace CmdLineApp
 
         static void Main(string[] args)
         {
-            AppGuard.Invoke(() => CmdLine<Program>.Execute(args, new CmdLineConfig { ArgStartsWith = '-' }));
+            AppGuard.Invoke(() => CmdLine<Program>.Execute(args));
             AppGuard.DebugReadLine();
         }
 
