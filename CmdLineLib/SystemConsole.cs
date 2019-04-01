@@ -147,7 +147,6 @@ namespace CmdLineLib
                 if (_IsShell)
                     State += "SH;";
             }
-            Console.WriteLine("State: {0}", SystemConsole.State);
             _IsSet = true;
         }
 
