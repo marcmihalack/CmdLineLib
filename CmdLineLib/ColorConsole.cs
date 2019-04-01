@@ -14,7 +14,7 @@ namespace CmdLineLib
         public ConsoleColor WarningFgColor = ConsoleColor.Yellow;
         public ConsoleColor ErrorFgColor = ConsoleColor.Red;
         // when using methods with fgColor and bgColor use TransparentColor to not change the fgColor
-        public ConsoleColor TransparentColor = ConsoleColor.White;
+        public ConsoleColor TransparentColor = (ConsoleColor)(-1);
 
         public IColorConsole w(object s)
         {
@@ -120,9 +120,10 @@ namespace CmdLineLib
 
         public IColorConsole w(ConsoleColor fgColor, ConsoleColor bgColor, string s, params object[] args)
         {
+            bool isTransparent = fgColor == TransparentColor || -1 == (int)fgColor;
             lock (SystemConsole.Lock)
             {
-                if (fgColor != TransparentColor)
+                if (!isTransparent)
                     Console.ForegroundColor = fgColor;
                 Console.BackgroundColor = bgColor;
                 Console.Write(s, args);

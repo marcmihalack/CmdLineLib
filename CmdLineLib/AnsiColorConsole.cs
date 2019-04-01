@@ -7,9 +7,9 @@ namespace CmdLineLib
     {
         internal AnsiColorConsole(bool trySet)
         {
-            if (trySet)
-                if (!SystemConsole.TrySetAnsiConsole())
-                    throw new NotSupportedException("ANSI console is not supported");
+            SystemConsole.Initialize();
+            //if (!SystemConsole.IsAnsi)
+            //    throw new NotSupportedException("ANSI console is not supported");
         }
 
         public AnsiColorConsole()
@@ -67,25 +67,22 @@ namespace CmdLineLib
         public IColorConsole w(ConsoleColor fgColor, object s)
         {
             int c = ConsoleColorMap[((int)fgColor) & 7];
-            if (((int)fgColor) >= 8)
-                lock (SystemConsole.Lock)
-                    Console.Write($"\u001b[3{c};1m{s}\u001b[0m");
-            else
-                lock (SystemConsole.Lock)
-                    Console.Write($"\u001b[3{c}m{s}\u001b[0m");
+            var fg = ((int)fgColor) >= 8
+                ? $"\u001b[3{c};1m"
+                : $"\u001b[3{c}m";
+            lock (SystemConsole.Lock)
+                Console.Write($"{fg}{s}\u001b[0m");
             return this;
         }
 
-        static readonly int[] ConsoleColorMap = new[] { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
         public IColorConsole w(ConsoleColor fgColor, string s, params object[] args)
         {
             int c = ConsoleColorMap[((int)fgColor) & 7];
-            if (((int)fgColor) >= 8)
-                lock (SystemConsole.Lock)
-                    Console.Write($"\u001b[3{c};1m{string.Format(s, args)}\u001b[0m");
-            else
-                lock (SystemConsole.Lock)
-                    Console.Write($"\u001b[3{c}m{string.Format(s, args)}\u001b[0m");
+            var fg = ((int)fgColor) >= 8
+                ? $"\u001b[3{c};1m"
+                : $"\u001b[3{c}m";
+            lock (SystemConsole.Lock)
+                Console.Write($"{fg}{string.Format(s, args)}\u001b[0m");
             return this;
         }
 
@@ -153,24 +150,22 @@ namespace CmdLineLib
         public IColorConsole wl(ConsoleColor fgColor, object s)
         {
             int c = ConsoleColorMap[((int)fgColor) & 7];
-            if (((int)fgColor) >= 8)
-                lock (SystemConsole.Lock)
-                    Console.Write($"\u001b[3{c};1m{s}\u001b[0m");
-            else
-                lock (SystemConsole.Lock)
-                    Console.Write($"\u001b[3{c}m{s}\u001b[0m");
+            var fg = ((int)fgColor) >= 8
+                ? $"\u001b[3{c};1m"
+                : $"\u001b[3{c}m";
+            lock (SystemConsole.Lock)
+                Console.WriteLine($"{fg}{s}\u001b[0m");
             return this;
         }
 
         public IColorConsole wl(ConsoleColor fgColor, string s, params object[] args)
         {
             int c = ConsoleColorMap[((int)fgColor) & 7];
-            if (((int)fgColor) >= 8)
-                lock (SystemConsole.Lock)
-                    Console.WriteLine($"\u001b[3{c};1m{string.Format(s, args)}\u001b[0m");
-            else
-                lock (SystemConsole.Lock)
-                    Console.WriteLine($"\u001b[3{c}m{string.Format(s, args)}\u001b[0m");
+            var fg = ((int)fgColor) >= 8
+                ? $"\u001b[3{c};1m"
+                : $"\u001b[3{c}m";
+            lock (SystemConsole.Lock)
+                Console.WriteLine($"{fg}{string.Format(s, args)}\u001b[0m");
             return this;
         }
 
@@ -188,7 +183,7 @@ namespace CmdLineLib
             return this;
         }
 
+        static readonly int[] ConsoleColorMap = new[] { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
         const string Reset = "\u001b[0m";
-        // background: $"\u001b[38;5;{c}m"
     }
 }

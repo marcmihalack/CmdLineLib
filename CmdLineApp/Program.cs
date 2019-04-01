@@ -79,23 +79,23 @@ namespace CmdLineApp
             }
             Console.ResetColor();
             Console.WriteLine();
-
             Console.WriteLine("IColorConsole implementations:");
-            var c1 = new ColorConsole();
-            Console.Write("DOS :");
+
+            WriteConsoleImplementation(new ColorConsole(), "DOS ", doBackground);
+            WriteConsoleImplementation(new AnsiColorConsole(), "ANSI", doBackground);
+            WriteConsoleImplementation(SystemConsole.CreateColorConsole(), "AUTO", doBackground);
+        }
+
+        static void WriteConsoleImplementation(IColorConsole con, string prefix, bool doBackground)
+        {
+            string text = doBackground ? "ab" : "\u2588\u2588";
+            Console.Write("{0}:", prefix);
             for (int i = 0; i < 16; i++)
                 if (doBackground)
-                    c1.w(c1.TransparentColor, (ConsoleColor)i, $"{i,2}{text}");
+                    con.w((ConsoleColor)(-1), (ConsoleColor)i, $"{i,2}{text}");
                 else
-                    c1.w((ConsoleColor)i, $"{i,2}{text}");
-            c1.wl();
-            Console.Write("ANSI:");
-            for (int i = 0; i < 16; i++)
-                if (doBackground)
-                    c2.w((ConsoleColor)(-1), (ConsoleColor)i, $"{i,2}{text}");
-                else
-                    c2.w((ConsoleColor)i, $"{i,2}{text}");
-            c2.wl();
+                    con.w((ConsoleColor)i, $"{i,2}{text}");
+            con.wl();
         }
 
         static void WriteAnsiColorTables()
