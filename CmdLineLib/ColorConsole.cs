@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+#pragma warning disable IDE1006 // Naming Styles
 
 namespace CmdLineLib
 {
@@ -7,16 +8,17 @@ namespace CmdLineLib
     {
         static public IColorConsole Default
         {
-            get { return defaultConsole ?? (defaultConsole = new ColorConsole()); }
+            get { return defaultConsole ?? (defaultConsole = SystemConsole.CreateColorConsole()); }
         }
+
         public ConsoleColor WarningFgColor = ConsoleColor.Yellow;
         public ConsoleColor ErrorFgColor = ConsoleColor.Red;
         // when using methods with fgColor and bgColor use TransparentColor to not change the fgColor
-        public ConsoleColor TransparentColor = ConsoleColor.White;
+        public ConsoleColor TransparentColor = (ConsoleColor)(-1);
 
         public IColorConsole w(object s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.Write(s);
                 return this;
@@ -25,7 +27,7 @@ namespace CmdLineLib
 
         public IColorConsole w(string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.Write(s, args);
                 return this;
@@ -34,7 +36,7 @@ namespace CmdLineLib
 
         public IColorConsole wl()
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.WriteLine();
                 return this;
@@ -43,7 +45,7 @@ namespace CmdLineLib
 
         public IColorConsole wl(object s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.WriteLine(s);
                 return this;
@@ -52,7 +54,7 @@ namespace CmdLineLib
 
         public IColorConsole wl(string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.WriteLine(s, args);
                 return this;
@@ -61,7 +63,7 @@ namespace CmdLineLib
 
         public IColorConsole w(ConsoleColor fgColor, object s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = fgColor;
                 Console.Write(s);
@@ -72,7 +74,7 @@ namespace CmdLineLib
 
         public IColorConsole w(ConsoleColor fgColor, string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = fgColor;
                 Console.Write(s, args);
@@ -83,7 +85,7 @@ namespace CmdLineLib
 
         public IColorConsole wl(ConsoleColor fgColor, object s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = fgColor;
                 Console.WriteLine(s);
@@ -94,7 +96,7 @@ namespace CmdLineLib
 
         public IColorConsole wl(ConsoleColor fgColor, string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = fgColor;
                 Console.WriteLine(s, args);
@@ -105,7 +107,7 @@ namespace CmdLineLib
 
         public IColorConsole w(ConsoleColor fgColor, ConsoleColor bgColor, object s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 if (fgColor != TransparentColor)
                     Console.ForegroundColor = fgColor;
@@ -118,9 +120,10 @@ namespace CmdLineLib
 
         public IColorConsole w(ConsoleColor fgColor, ConsoleColor bgColor, string s, params object[] args)
         {
-            lock (m_lock)
+            bool isTransparent = fgColor == TransparentColor || -1 == (int)fgColor;
+            lock (SystemConsole.Lock)
             {
-                if (fgColor != TransparentColor)
+                if (!isTransparent)
                     Console.ForegroundColor = fgColor;
                 Console.BackgroundColor = bgColor;
                 Console.Write(s, args);
@@ -131,7 +134,7 @@ namespace CmdLineLib
 
         public IColorConsole wl(ConsoleColor fgColor, ConsoleColor bgColor, object s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 if (fgColor != TransparentColor)
                     Console.ForegroundColor = fgColor;
@@ -144,7 +147,7 @@ namespace CmdLineLib
 
         public IColorConsole wl(ConsoleColor fgColor, ConsoleColor bgColor, string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 if (fgColor != TransparentColor)
                     Console.ForegroundColor = fgColor;
@@ -157,7 +160,7 @@ namespace CmdLineLib
 
         public IColorConsole fclr(ConsoleColor fgColor)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = fgColor;
                 return this;
@@ -166,7 +169,7 @@ namespace CmdLineLib
 
         public IColorConsole bclr(ConsoleColor bgclr)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.BackgroundColor = bgclr;
                 return this;
@@ -175,7 +178,7 @@ namespace CmdLineLib
 
         public IColorConsole rclr()
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ResetColor();
                 return this;
@@ -184,7 +187,7 @@ namespace CmdLineLib
 
         public void warn(string s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = WarningFgColor;
                 Console.WriteLine(s);
@@ -194,7 +197,7 @@ namespace CmdLineLib
 
         public void warn(string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = WarningFgColor;
                 Console.WriteLine(s, args);
@@ -204,7 +207,7 @@ namespace CmdLineLib
 
         public void err(string s)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = ErrorFgColor;
                 Console.WriteLine(s);
@@ -214,7 +217,7 @@ namespace CmdLineLib
 
         public void err(string s, params object[] args)
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
             {
                 Console.ForegroundColor = ErrorFgColor;
                 Console.WriteLine(s, args);
@@ -224,7 +227,7 @@ namespace CmdLineLib
 
         public IColorConsole flush()
         {
-            lock (m_lock)
+            lock (SystemConsole.Lock)
                 Console.Out.Flush();
             return this;
         }
@@ -263,7 +266,7 @@ namespace CmdLineLib
             rclr();
         }
 
-        static ColorConsole defaultConsole = null;
-        static object m_lock = new object();
+        static IColorConsole defaultConsole = null;
     }
 }
+#pragma warning restore IDE1006 // Naming Styles
